@@ -32,8 +32,12 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Bow variables----------------------------")]
 
+    public float maxChargeTime = 1.5f;
+    private float chargeTime;
+    private float chargeLevel; 
     public float shotRange = 10; 
     public bool isBombLoaded = false;
+    public GameObject arrowPrefab;
 
    
 
@@ -77,8 +81,18 @@ public class PlayerMovement : MonoBehaviour
                 dashDirection = transform.forward;
                 dashTimer = 0;  
                 break;
-            case PlayerState.Charge: break;
-            case PlayerState.Release: break;
+            case PlayerState.Charge: 
+                chargeTime = 0;
+                chargeLevel = 0;
+                break;
+            case PlayerState.Release:
+                float shotDistance = chargeLevel * shotRange;
+                Vector3 spawnPos = transform.position + transform.forward * .8f;
+                GameObject arrow = Instantiate(arrowPrefab, spawnPos, Quaternion.identity);
+                arrow.GetComponent<Arrow>().Launch(transform.forward, shotDistance);
+
+                //Debug.Log("Fired at charge " + chargeLevel + ", distance " + chargeLevel * shotRange);
+                break;
         }
     }
 
@@ -122,6 +136,11 @@ public class PlayerMovement : MonoBehaviour
         { 
             SetState(PlayerState.Dash); 
         }
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            SetState(PlayerState.Charge);
+        }
     }
 
     void TickDash()
@@ -130,6 +149,7 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(dashDirection * dashSpeed * Time.deltaTime);
 
         dashTimer += Time.deltaTime;
+
         if (dashTimer > dashDuration) 
         { 
             SetState(PlayerState.Move); 
@@ -138,11 +158,36 @@ public class PlayerMovement : MonoBehaviour
 
     void TickCharge()
     {
+        chargeTime += Time.deltaTime;
+        chargeLevel = Mathf.Clamp01(chargeTime / maxChargeTime);
 
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Plane groundPlane = new Plane(Vector3.up, transform.position);
+
+        if (groundPlane.Raycast(ray, out float distance))
+        {
+            Vector3 hitPoint = ray.GetPoint(distance);
+            Vector3 aimDirection = hitPoint - transform.position;
+            aimDirection.y = 0;
+
+            Debug.DrawLine(transform.position, hitPoint, Color.red);
+
+            if (aimDirection != Vector3.zero)
+            {
+                transform.forward = aimDirection.normalized;
+                
+            }
+
+        }
+
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            SetState(PlayerState.Release);
+        }
     }
 
     void TickRelease()
     {
-
+        SetState(PlayerState.Move);
     }
 }
