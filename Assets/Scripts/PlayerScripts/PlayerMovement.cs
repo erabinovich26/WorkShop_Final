@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     enum PlayerState 
     { 
-        Idle,
+        //Idle,
         Move, 
         Dash, 
         Charge, 
@@ -53,10 +53,23 @@ public class PlayerMovement : MonoBehaviour
         switch (state) 
         {
             //case PlayerState.Idle: TickIdle(); break;
-            case PlayerState.Move: TickMove(); break;
-            case PlayerState.Dash: TickDash(); break;
-            case PlayerState.Charge: TickCharge(); break;
-            case PlayerState.Release: TickRelease(); break;
+
+            case PlayerState.Move: 
+                TickMove(); 
+                break;
+
+            case PlayerState.Dash: 
+                TickDash(); 
+                break;
+
+            case PlayerState.Charge: 
+                TickCharge(); 
+                break;
+
+            case PlayerState.Release: 
+                TickRelease(); 
+                break;
+
         }
     }
 
