@@ -4904,7 +4904,7 @@ MonoBehaviour:
   maxChargeTime: 1.5
   shotRange: 20
   isBombLoaded: 0
-  arrowPrefab: {fileID: 5556160046098064399, guid: 9c65d3d5ad33f1f49acee904e4ec7d35, type: 3}
+  arrowPrefab: {fileID: 4046202468243759592, guid: 9a7315618be8f2f4c82557d4feacb5b1, type: 3}
 --- !u!143 &1984541827
 CharacterController:
   m_ObjectHideFlags: 0
